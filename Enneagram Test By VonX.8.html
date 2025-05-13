@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enneagram Test By Von - Creative Dark UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark-primary: #202124; /* Google Dark BG */
+            --bg-dark-secondary: #303134; /* Slightly Lighter Card BG */
+            --bg-dark-tertiary: #3c4043; /* Even Lighter for elements */
+            --text-primary: #e8eaed;    /* Google Dark Text Primary */
+            --text-secondary: #bdc1c6;  /* Google Dark Text Secondary */
+            --accent-purple: #ab47bc; /* Refined Purple */
+            --accent-purple-darker: #8e24aa;
+            --accent-teal: #26a69a; /* Teal for secondary accent */
+            --border-color: #5f6368;
+            --font-family-main: 'Inter', sans-serif;
+            --border-radius-main: 8px;
+            --box-shadow-soft: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+            --box-shadow-lifted: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.24);
+        }
+
+        body {
+            font-family: var(--font-family-main);
+            line-height: 1.7;
+            margin: 0;
+            padding: 0; /* Remove body padding, container will handle it */
+            background-color: var(--bg-dark-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #progressBarContainer {
+            width: 100%;
+            background-color: var(--bg-dark-secondary);
+            height: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-teal));
+            transition: width 0.3s ease-out;
+        }
+
+        .container {
+            max-width: 800px; /* Adjusted for better readability */
+            width: 90%;
+            margin: 60px auto 40px auto; /* Margin top for progress bar */
+            background: transparent; /* Container itself is transparent */
+            padding: 0; /* No padding on main container */
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            padding-top: 20px; /* Space from progress bar if fixed */
+        }
+        h1 .by-von {
+            font-weight: 400;
+            font-size: 0.6em;
+            color: var(--accent-teal);
+            display: block;
+            margin-top: -5px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: var(--accent-purple);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: var(--accent-teal);
+            margin-bottom: 15px;
+        }
+
+        .section-card {
+            background-color: var(--bg-dark-secondary);
+            padding: 25px 30px;
+            border-radius: var(--border-radius-main);
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow-soft);
+            border: 1px solid var(--border-color);
+        }
+        
+        .introduction p, .instructions p, .disclaimer p {
+            color: var(--text-secondary);
+            font-size: 1.05em;
+        }
+        .introduction strong, .instructions strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .instructions ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .instructions ul li {
+            padding: 5px 0;
+            color: var(--text-secondary);
+        }
+        .instructions ul li strong {
+            color: var(--text-primary);
+        }
+
+
+        .question-item {
+            background-color: var(--bg-dark-tertiary);
+            padding: 20px;
+            border-radius: var(--border-radius-main);
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow-soft);
+            border: 1px solid transparent; /* For potential hover effect */
+            transition: border-color 0.3s ease, transform 0.2s ease;
+        }
+        .question-item:hover {
+            border-color: var(--accent-purple);
+            /* transform: translateY(-2px); */
+        }
+
+        .question-item .statement-text {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .question-item .scenario-text {
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            font-style: italic;
+            color: var(--text-secondary);
+            padding-left: 15px;
+            border-left: 3px solid var(--accent-teal);
+            background-color: rgba(0,0,0,0.1);
+            padding: 10px 10px 10px 15px;
+            border-radius: 4px;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        .options label {
+            background-color: var(--bg-dark-secondary);
+            padding: 10px 15px;
+            border-radius: 20px; /* Pill shape */
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border: 1px solid var(--border-color);
+            flex-grow: 1;
+            text-align: center;
+        }
+        .options input[type="radio"] {
+            display: none; /* Hide actual radio button */
+        }
+        .options input[type="radio"]:checked + span {
+            /* This style will be applied by JS or by :has pseudo class if widely supported */
+        }
+        .options label:hover {
+            background-color: var(--accent-purple-darker);
+            color: var(--text-primary);
+            border-color: var(--accent-purple);
+        }
+        .options label.selected { /* Class added by JS */
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-teal));
+            color: white;
+            border-color: transparent;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: separate; /* For rounded corners on cells */
+            border-spacing: 0;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-main);
+            overflow: hidden; /* To clip rounded corners */
+        }
+        th, td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--bg-dark-tertiary);
+            color: var(--accent-purple);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        td {
+            background-color: var(--bg-dark-secondary);
+            color: var(--text-secondary);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .type-description-item {
+            background-color: var(--bg-dark-tertiary);
+            padding: 20px;
+            border-radius: var(--border-radius-main);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow-soft);
+        }
+        .type-description-item h3 {
+            color: var(--accent-purple);
+            margin-top: 0;
+        }
+        .type-description-item p {
+            color: var(--text-secondary);
+        }
+        .type-description-item strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        button {
+            display: block;
+            margin: 40px auto;
+            padding: 15px 35px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-teal));
+            color: white;
+            border: none;
+            border-radius: 50px; /* Pill shape */
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--box-shadow-soft);
+        }
+        button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: var(--box-shadow-lifted);
+        }
+        button:active {
+            transform: translateY(0px) scale(1);
+            box-shadow: var(--box-shadow-soft);
+        }
+
+        .results h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        #scoreSummary h3 {
+            text-align: center;
+            color: var(--accent-teal);
+            margin-bottom: 15px;
+        }
+        #scoreSummary p {
+            background-color: var(--bg-dark-tertiary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 1em;
+            color: var(--text-secondary);
+        }
+        #scoreSummary p strong {
+            color: var(--text-primary);
+        }
+
+
+        #topResultsInfo { /* Was .wing-info */
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        #topResultsInfo h3 {
+            text-align: center;
+            color: var(--accent-purple);
+            margin-bottom: 25px;
+        }
+        .top-result-item {
+            background-color: var(--bg-dark-tertiary);
+            padding: 20px;
+            border-radius: var(--border-radius-main);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow-soft);
+        }
+        .top-result-item:last-child {
+            margin-bottom: 0;
+        }
+        .top-result-item .rank {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--accent-teal);
+            margin-bottom: 8px;
+        }
+        .top-result-item .designation {
+            font-weight: 600;
+            font-size: 1.2em;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .top-result-item .explanation {
+            font-size: 1em;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                margin-top: 50px; /* Adjust for progress bar */
+            }
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            h3 {
+                font-size: 1.2em;
+            }
+            .section-card {
+                padding: 20px;
+            }
+            .question-item {
+                padding: 15px;
+            }
+            .options {
+                flex-direction: column; /* Stack options vertically on small screens */
+            }
+            .options label {
+                width: 100%;
+                box-sizing: border-box; /* Ensure padding doesn't break layout */
+            }
+            button {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
+
+    <div class="container">
+        <h1>Enneagram Test <span class="by-von">By Von</span></h1>
+
+        <div class="section-card introduction">
+            <h2>Pendahuluan</h2>
+            <p>Selamat datang di Tes Enneagram versi Skenario Ringkas! Setiap pernyataan kini disertai dengan contoh skenario untuk membantu Anda lebih memahami konteksnya. Enneagram adalah sistem pemetaan kepribadian yang menggambarkan sembilan tipe dasar, masing-masing dengan motivasi, ketakutan, dan pola perilaku khas. Anda juga mungkin memiliki "sayap" (wing), pengaruh dari tipe tetangga.</p>
+            <p>Tes ini terdiri dari <strong>81 pernyataan dengan skenario</strong>. Hasilnya akan menampilkan <strong>tiga kemungkinan tipe dan sayap teratas Anda</strong> untuk mendorong refleksi diri yang lebih mendalam. Ingat, ini alat bantu, bukan diagnosis absolut. Kepribadian itu dinamis.</p>
+            <p><strong>Cara Menjawab:</strong></p>
+            <ul>
+                <li>Baca pernyataan inti dan contoh skenarionya.</li>
+                <li>Nilailah seberapa sering <strong>pernyataan inti</strong> menggambarkan diri Anda secara umum, dengan skenario sebagai salah satu ilustrasi.</li>
+                <li>Jawablah dengan jujur. Tidak ada jawaban benar atau salah. Luangkan waktu Anda.</li>
+            </ul>
+        </div>
+
+        <div class="section-card instructions">
+            <h2>Petunjuk Pengerjaan</h2>
+            <p>Untuk setiap pernyataan di bawah ini, pilihlah salah satu dari lima opsi jawaban yang paling sesuai dengan diri Anda. Gunakan skala penilaian berikut:</p>
+            <ul>
+                <li><strong>SS</strong> = Sangat Sesuai (5 poin)</li>
+                <li><strong>S</strong> = Sesuai (4 poin)</li>
+                <li><strong>N</strong> = Netral (3 poin)</li>
+                <li><strong>TS</strong> = Tidak Sesuai (2 poin)</li>
+                <li><strong>STS</strong> = Sangat Tidak Sesuai (1 poin)</li>
+            </ul>
+        </div>
+
+        <form id="enneagramTest">
+            <div class="question-list">
+                <!-- Pernyataan (81) akan di-generate di sini -->
+            </div>
+            <button type="button" onclick="calculateScores()">Lihat Hasil Skor</button>
+        </form>
+
+        <div id="scoringGuide" class="section-card hidden">
+            <h2>Panduan Penilaian (Cara Menghitung Skor)</h2>
+            <p>Untuk mengetahui skor masing-masing tipe Enneagram, jumlahkan poin dari jawaban Anda untuk pernyataan-pernyataan berikut:</p>
+            <table id="scoringTable">
+                <thead>
+                    <tr>
+                        <th>Tipe Enneagram</th>
+                        <th>Nomor Pernyataan</th>
+                        <th>Total Skor Anda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Baris skor akan di-generate oleh JavaScript -->
+                </tbody>
+            </table>
+            <p>Tipe dengan skor tertinggi kemungkinan adalah tipe dominan Anda. "Sayap" (wing) adalah tipe yang berada di sebelah tipe dominan Anda pada lingkaran Enneagram dan memiliki skor tertinggi kedua di antara kedua tetangga tersebut. Tes ini akan menampilkan tiga kemungkinan tipe dan sayap teratas Anda.</p>
+            <p>Gunakan hasil ini sebagai titik awal untuk eksplorasi lebih lanjut.</p>
+        </div>
+
+        <div id="resultsDisplay" class="section-card hidden">
+             <h2>Hasil Skor Anda</h2>
+             <div id="scoreSummary">
+                 <!-- Skor per tipe akan muncul di sini -->
+             </div>
+             <div id="topResultsInfo" class="wing-info"> 
+                <h3>Tiga Kemungkinan Tipe & Sayap Teratas Anda</h3>
+                <div id="topResultsContainer">
+                    <!-- Hasil peringkat akan muncul di sini -->
+                </div>
+             </div>
+        </div>
+
+        <div id="typeDescriptions" class="section-card hidden">
+            <h2>Deskripsi Singkat Masing-Masing Tipe Enneagram</h2>
+            <div class="type-description-item">
+                <h3>Tipe 1: Perfeksionis / Reformer (Si Kritis yang Berprinsip)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin menjadi baik, benar, dan berintegritas; memperbaiki diri sendiri dan dunia di sekitarnya.
+                <strong>Ketakutan Inti:</strong> Menjadi jahat, korup, atau cacat secara moral.
+                <strong>Kekuatan:</strong> Berprinsip, bertanggung jawab, disiplin, teliti, adil, terorganisir, dan memiliki standar tinggi. Mereka berusaha untuk perbaikan terus-menerus.
+                <strong>Area Pertumbuhan:</strong> Belajar menerima ketidaksempurnaan (diri sendiri dan orang lain), lebih fleksibel, mengurangi sifat kritis dan menghakimi, serta menikmati proses tanpa terlalu fokus pada hasil sempurna. Mengembangkan belas kasihan diri.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 2: Penolong / Pemberi (Si Murah Hati yang Mendukung)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin dicintai, dibutuhkan, dan dihargai atas bantuannya; ingin terkoneksi dengan orang lain.
+                <strong>Ketakutan Inti:</strong> Tidak diinginkan, tidak layak dicintai, atau sendirian dan tidak berarti bagi orang lain.
+                <strong>Kekuatan:</strong> Murah hati, empatik, suportif, hangat, peduli, pandai membangun hubungan, dan intuitif terhadap kebutuhan orang lain.
+                <strong>Area Pertumbuhan:</strong> Belajar mengenali dan memenuhi kebutuhan diri sendiri tanpa rasa bersalah, menetapkan batasan yang sehat, memberi tanpa mengharapkan imbalan spesifik, dan menyadari bahwa harga diri tidak bergantung pada penerimaan atau validasi orang lain.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 3: Pencapai / Motivator (Si Ambisius yang Berorientasi Sukses)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin menjadi berharga, dikagumi, dan sukses; menghindari kegagalan dan terlihat tidak kompeten.
+                <strong>Ketakutan Inti:</strong> Menjadi tidak berharga, gagal, atau tidak memiliki nilai di mata orang lain.
+                <strong>Kekuatan:</strong> Ambisius, efisien, energik, percaya diri, adaptif, berorientasi pada tujuan, dan pandai memotivasi diri serta orang lain.
+                <strong>Area Pertumbuhan:</strong> Menemukan nilai diri yang otentik di luar pencapaian dan pengakuan eksternal, mengembangkan kejujuran emosional (termasuk mengakui kerentanan), melambatkan tempo, dan fokus pada proses serta kesejahteraan batin daripada hanya citra dan hasil.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 4: Individualis / Romantis (Si Unik yang Introspektif)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin menemukan identitas diri yang unik dan signifikan; mengekspresikan diri secara otentik dan mendalam.
+                <strong>Ketakutan Inti:</strong> Tidak memiliki identitas atau signifikansi pribadi; menjadi biasa saja, cacat, atau tidak dipahami.
+                <strong>Kekuatan:</strong> Kreatif, introspektif, sensitif, ekspresif, intuitif, memiliki apresiasi terhadap keindahan, dan mampu merasakan emosi secara mendalam.
+                <strong>Area Pertumbuhan:</strong> Mengelola intensitas emosi agar tidak terjebak dalam melankolia, menghargai hal-hal yang biasa dan positif dalam hidup, tidak terlalu terfokus pada apa yang kurang atau berbeda, dan bertindak meskipun merasa tidak dipahami atau tidak "siap".</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 5: Pengamat / Investigator (Si Cerdas yang Visioner)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin menjadi kompeten, berpengetahuan, dan mandiri; memahami dunia secara mendalam.
+                <strong>Ketakutan Inti:</strong> Menjadi tidak berdaya, tidak berguna, tidak mampu, atau kewalahan oleh kebutuhan orang lain.
+                <strong>Kekuatan:</strong> Analitis, perseptif, inovatif, objektif, mandiri, memiliki rasa ingin tahu yang besar, dan mampu berkonsentrasi secara mendalam.
+                <strong>Area Pertumbuhan:</strong> Terlibat lebih aktif dengan dunia dan emosi (milik sendiri dan orang lain), berbagi pengetahuan dan diri dengan orang lain tanpa takut terkuras, mengatasi kecenderungan untuk menarik diri, dan menyeimbangkan antara observasi dan partisipasi aktif.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 6: Loyalis / Skeptis (Si Setia yang Bertanggung Jawab)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin merasa aman dan didukung; mengantisipasi dan mempersiapkan diri terhadap potensi bahaya atau ketidakpastian.
+                <strong>Ketakutan Inti:</strong> Tidak memiliki dukungan atau panduan; tidak mampu bertahan sendirian, membuat kesalahan fatal, atau dikhianati.
+                <strong>Kekuatan:</strong> Setia, bertanggung jawab, pekerja keras, berani (terutama saat menghadapi ketakutan demi orang/nilai yang dipercaya), pandai memecahkan masalah, dan memiliki kemampuan analisis risiko.
+                <strong>Area Pertumbuhan:</strong> Mengembangkan kepercayaan pada diri sendiri dan orang lain (membedakan intuisi dari kecemasan), mengurangi kecemasan dan keraguan yang berlebihan, mengambil risiko yang sehat, dan menyadari bahwa mereka lebih kuat dan mampu dari yang mereka pikirkan.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 7: Antusias / Petualang (Si Optimis yang Sibuk)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin merasa bahagia, puas, dan bebas dari rasa sakit atau keterbatasan; mencari pengalaman baru dan menyenangkan.
+                <strong>Ketakutan Inti:</strong> Terperangkap dalam penderitaan, kekurangan, kebosanan, atau kehilangan pilihan.
+                <strong>Kekuatan:</strong> Optimis, energik, spontan, serba bisa, imajinatif, menyenangkan, dan pandai melihat sisi positif.
+                <strong>Area Pertumbuhan:</strong> Belajar menghadapi dan memproses emosi negatif serta ketidaknyamanan, berkomitmen pada satu hal hingga tuntas, menemukan kepuasan dalam kesederhanaan dan kedalaman, serta menyeimbangkan antara kesenangan dan tanggung jawab jangka panjang.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 8: Penantang / Pelindung (Si Kuat yang Asertif)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin melindungi diri sendiri dan orang-orang yang mereka sayangi; mengendalikan lingkungan mereka untuk menghindari kerentanan.
+                <strong>Ketakutan Inti:</strong> Dikendalikan, dilukai, dimanipulasi, atau dilemahkan oleh orang lain.
+                <strong>Kekuatan:</strong> Percaya diri, tegas, protektif, berani, bersemangat, memiliki kemauan kuat, dan mampu memimpin serta mengambil keputusan sulit.
+                <strong>Area Pertumbuhan:</strong> Mengembangkan kelembutan dan kerentanan, menyadari dampak kekuatan mereka pada orang lain (terkadang intimidatif), belajar mempercayai dan mendelegasikan, serta mengendalikan impulsivitas dan kemarahan agar lebih konstruktif.</p>
+            </div>
+            <div class="type-description-item">
+                <h3>Tipe 9: Pendamai / Mediator (Si Mudah Bergaul yang Menerima)</h3>
+                <p><strong>Motivasi Inti:</strong> Ingin menjaga kedamaian batin dan keharmonisan eksternal; menghindari konflik, ketegangan, dan perpisahan.
+                <strong>Ketakutan Inti:</strong> Kehilangan koneksi, perpisahan, konflik yang tak terselesaikan, atau merasa terfragmentasi.
+                <strong>Kekuatan:</strong> Menerima, suportif, sabar, diplomatis, menyenangkan, mampu melihat berbagai sudut pandang, dan menciptakan suasana yang nyaman.
+                <strong>Area Pertumbuhan:</strong> Mengungkapkan kebutuhan dan pendapat pribadi (meskipun berpotensi konflik), mengatasi penundaan dan inersia, menetapkan prioritas diri, dan menyadari bahwa kemarahan yang sehat atau ketidaksetujuan bisa menjadi motivator untuk perubahan positif dan pertumbuhan pribadi.</p>
+            </div>
+        </div>
+
+        <div class="section-card disclaimer">
+            <h2>Catatan Penutup</h2>
+            <p>Ingatlah bahwa tes ini hanyalah sebuah alat bantu untuk refleksi diri. Kepribadian Anda jauh lebih kaya dan kompleks daripada sekadar label tipe dan sayap. Hasil tes ini, dengan 81 pertanyaan, tetaplah sebuah indikasi, bukan kepastian.</p>
+            <p>Kami sangat menyarankan Anda untuk membaca lebih lanjut tentang tipe Enneagram yang skornya tinggi, serta tipe-tipe lain yang mungkin beresonansi dengan Anda. Pertimbangkan juga untuk berdiskusi dengan praktisi Enneagram atau membaca buku-buku terkemuka untuk pemahaman yang lebih mendalam.</p>
+            <p>Kepribadian itu dinamis dan dapat berkembang seiring waktu dan pengalaman. Gunakan pengetahuan ini untuk bertumbuh menjadi versi terbaik dari diri Anda.</p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // ... (81 pertanyaan dengan skenario tetap sama seperti versi sebelumnya) ...
+            // Tipe 1 (9 pertanyaan)
+            { text: "Saya merasa penting untuk melakukan segala sesuatu dengan benar dan sesuai standar.", scenario: "Contoh: Ketika mengerjakan laporan, saya akan memeriksa ulang setiap detail untuk memastikan tidak ada kesalahan, bahkan jika itu berarti bekerja lembur.", type: 1 },
+            { text: "Saya memiliki standar internal yang tinggi untuk diri sendiri dan terkadang untuk orang lain.", scenario: "Contoh: Jika anggota tim saya menyerahkan pekerjaan yang ceroboh, saya merasa perlu untuk memberikan masukan agar kualitasnya meningkat.", type: 1 },
+            { text: "Saya sering mengkritik diri sendiri jika saya membuat kesalahan atau tidak mencapai standar saya.", scenario: "Contoh: Setelah presentasi, saya sering memikirkan apa yang bisa saya lakukan lebih baik dan merasa kecewa jika ada kekurangan kecil.", type: 1 },
+            { text: "Integritas dan kejujuran adalah nilai yang sangat saya junjung tinggi dalam setiap tindakan.", scenario: "Contoh: Saya akan menolak untuk terlibat dalam proyek yang menurut saya tidak etis, meskipun itu menguntungkan.", type: 1 },
+            { text: "Saya berusaha memperbaiki hal-hal yang menurut saya tidak efisien, salah, atau tidak adil.", scenario: "Contoh: Melihat antrian yang tidak teratur, saya mungkin akan mencoba mengatur ulang agar lebih efisien bagi semua orang.", type: 1 },
+            { text: "Saya merasa terganggu ketika orang lain tidak serius atau ceroboh dalam pekerjaan mereka.", scenario: "Contoh: Saat kerja kelompok, saya frustrasi jika ada anggota yang tidak berkontribusi maksimal atau asal-asalan.", type: 1 },
+            { text: "Saya sering membuat daftar tugas dan merasa puas ketika menyelesaikannya dengan baik.", scenario: "Contoh: Setiap pagi, saya merencanakan hari saya dan merasa lega saat semua item di daftar periksa saya selesai.", type: 1 },
+            { text: "Kadang-kadang saya merasa tegang karena berusaha terlalu keras untuk menjadi sempurna.", scenario: "Contoh: Saya bisa stres memikirkan detail kecil sebuah proyek, khawatir tidak memenuhi harapan.", type: 1 },
+            { text: "Saya memiliki 'suara hati' atau 'kritikus internal' yang kuat yang membimbing tindakan saya.", scenario: "Contoh: Sebelum membuat keputusan, saya selalu mempertimbangkan apakah itu 'hal yang benar' untuk dilakukan.", type: 1 },
+
+            // Tipe 2 (9 pertanyaan)
+            { text: "Saya seringkali lebih fokus pada kebutuhan orang lain daripada kebutuhan saya sendiri.", scenario: "Contoh: Saya mungkin menunda pekerjaan saya sendiri untuk membantu teman yang sedang kesulitan, meskipun saya juga punya tenggat waktu.", type: 2 },
+            { text: "Saya merasa senang dan berharga ketika bisa membantu atau mendukung orang lain.", scenario: "Contoh: Memberikan dukungan emosional kepada seseorang yang sedih membuat saya merasa telah melakukan sesuatu yang berarti.", type: 2 },
+            { text: "Sulit bagi saya untuk mengatakan 'tidak' ketika seseorang meminta bantuan, bahkan jika saya sibuk.", scenario: "Contoh: Meskipun jadwal saya padat, jika ada yang meminta tolong, saya cenderung mengatakan 'ya' karena tidak ingin mengecewakan.", type: 2 },
+            { text: "Saya mendambakan apresiasi dan pengakuan atas apa yang telah saya berikan kepada orang lain.", scenario: "Contoh: Saya merasa senang ketika orang lain mengucapkan terima kasih atau mengakui bantuan yang saya berikan.", type: 2 },
+            { text: "Saya pandai merasakan apa yang dibutuhkan atau dirasakan orang lain, terkadang sebelum mereka menyadarinya.", scenario: "Contoh: Saya sering tahu kapan teman saya sedang sedih atau butuh sesuatu, bahkan sebelum mereka mengatakannya.", type: 2 },
+            { text: "Saya bisa merasa terluka atau kecewa jika bantuan saya tidak dihargai atau ditolak.", scenario: "Contoh: Jika saya sudah berusaha keras membantu dan tidak ada respons positif, saya bisa merasa sedih.", type: 2 },
+            { text: "Saya sering berusaha membuat orang lain merasa nyaman dan diterima.", scenario: "Contoh: Di pertemuan baru, saya akan mencoba mengajak bicara orang yang terlihat sendirian agar mereka merasa termasuk.", type: 2 },
+            { text: "Terkadang saya khawatir bahwa saya akan sendirian atau tidak dicintai jika saya tidak membantu orang lain.", scenario: "Contoh: Pikiran bahwa orang mungkin tidak membutuhkan saya lagi jika saya berhenti memberi bisa membuat saya cemas.", type: 2 },
+            { text: "Saya merasa sulit untuk meminta bantuan untuk diri saya sendiri.", scenario: "Contoh: Meskipun saya butuh bantuan, saya lebih suka mencoba menyelesaikannya sendiri daripada merepotkan orang lain.", type: 2 },
+
+            // Tipe 3 (9 pertanyaan)
+            { text: "Saya termotivasi oleh pencapaian dan pengakuan atas kesuksesan saya.", scenario: "Contoh: Mendapatkan promosi atau penghargaan atas kerja keras saya adalah hal yang sangat memuaskan.", type: 3 },
+            { text: "Saya suka terlihat kompeten, efisien, dan sukses di mata orang lain.", scenario: "Contoh: Saat presentasi, saya memastikan penampilan dan materi saya terlihat profesional dan mengesankan.", type: 3 },
+            { text: "Saya cenderung menyesuaikan diri atau citra saya agar sesuai dengan harapan orang-orang penting atau situasi.", scenario: "Contoh: Saya bisa mengubah gaya bicara atau penampilan saya tergantung dengan siapa saya berinteraksi agar diterima.", type: 3 },
+            { text: "Kegagalan adalah sesuatu yang sangat ingin saya hindari; itu membuat saya merasa tidak berharga.", scenario: "Contoh: Jika proyek saya gagal, saya akan merasa sangat terpukul dan mempertanyakan kemampuan saya.", type: 3 },
+            { text: "Saya sering menetapkan tujuan yang ambisius dan bekerja keras untuk mencapainya dengan cepat.", scenario: "Contoh: Saya suka tantangan dan akan bekerja ekstra untuk mencapai target penjualan yang tinggi.", type: 3 },
+            { text: "Saya sadar akan bagaimana orang lain memandang saya dan berusaha menciptakan kesan yang baik.", scenario: "Contoh: Saya selalu berusaha tampil rapi dan percaya diri di depan umum.", type: 3 },
+            { text: "Saya menghargai efisiensi dan hasil yang nyata.", scenario: "Contoh: Saya lebih suka metode yang cepat dan efektif daripada yang berbelit-belit meskipun hasilnya sama.", type: 3 },
+            { text: "Saya terkadang kesulitan untuk bersantai atau tidak melakukan apa-apa; saya merasa harus selalu produktif.", scenario: "Contoh: Saat liburan pun, saya sering memikirkan pekerjaan atau mencari kegiatan produktif.", type: 3 },
+            { text: "Saya pandai 'menjual' ide atau diri saya sendiri kepada orang lain.", scenario: "Contoh: Saya bisa meyakinkan orang lain untuk mendukung proposal saya dengan presentasi yang menarik.", type: 3 },
+
+            // Tipe 4 (9 pertanyaan)
+            { text: "Saya merasa diri saya unik, berbeda, dan terkadang tidak dipahami oleh kebanyakan orang.", scenario: "Contoh: Saya sering merasa selera musik atau film saya berbeda dari teman-teman saya.", type: 4 },
+            { text: "Saya sering merenungkan makna hidup, keindahan, dan perasaan saya yang mendalam.", scenario: "Contoh: Saya bisa menghabiskan waktu berjam-jam memikirkan puisi atau lukisan yang menyentuh hati saya.", type: 4 },
+            { text: "Saya mendambakan hubungan yang otentik, mendalam, dan penuh makna.", scenario: "Contoh: Saya lebih memilih satu teman yang benar-benar mengerti saya daripada banyak teman biasa.", type: 4 },
+            { text: "Terkadang saya merasa ada sesuatu yang kurang dalam diri saya atau hidup saya, yang orang lain miliki.", scenario: "Contoh: Melihat kebahagiaan orang lain di media sosial bisa membuat saya merasa ada yang hilang dalam hidup saya.", type: 4 },
+            { text: "Saya memiliki dunia batin yang kaya, imajinatif, dan terkadang melankolis.", scenario: "Contoh: Saya sering melamun atau menulis jurnal untuk menjelajahi pikiran dan perasaan saya.", type: 4 },
+            { text: "Saya sangat menghargai kreativitas dan ekspresi diri yang otentik.", scenario: "Contoh: Saya lebih suka hadiah buatan tangan yang personal daripada barang mahal yang umum.", type: 4 },
+            { text: "Saya cenderung merasakan emosi secara intens, baik yang positif maupun negatif.", scenario: "Contoh: Kebahagiaan saya bisa sangat meluap, tetapi kesedihan saya juga bisa sangat mendalam.", type: 4 },
+            { text: "Saya bisa merasa bosan dengan hal-hal yang rutin atau dangkal.", scenario: "Contoh: Percakapan basa-basi atau pekerjaan monoton membuat saya cepat merasa jenuh.", type: 4 },
+            { text: "Saya percaya bahwa penting untuk menjadi jujur pada perasaan saya, bahkan jika itu sulit.", scenario: "Contoh: Saya akan mengakui jika saya merasa cemburu atau sedih, meskipun itu tidak nyaman.", type: 4 },
+
+            // Tipe 5 (9 pertanyaan)
+            { text: "Saya suka mengumpulkan informasi dan pengetahuan sebelum bertindak atau mengambil keputusan.", scenario: "Contoh: Sebelum membeli gadget baru, saya akan melakukan riset mendalam tentang spesifikasi dan ulasannya.", type: 5 },
+            { text: "Saya merasa lebih nyaman mengamati dari pinggir daripada terlibat langsung dalam situasi sosial yang ramai.", scenario: "Contoh: Di sebuah pesta, saya mungkin lebih suka duduk di sudut dan mengamati orang lain daripada menjadi pusat perhatian.", type: 5 },
+            { text: "Saya sangat menghargai privasi, ruang pribadi, dan kemandirian saya.", scenario: "Contoh: Saya membutuhkan waktu sendirian setiap hari untuk 'mengisi ulang baterai' dan tidak suka jika privasi saya diganggu.", type: 5 },
+            { text: "Saya bisa menjadi sangat fokus dan tenggelam dalam minat atau bidang keahlian tertentu.", scenario: "Contoh: Jika saya tertarik pada suatu topik, saya bisa menghabiskan berjam-jam mempelajarinya tanpa merasa bosan.", type: 5 },
+            { text: "Saya cenderung menarik diri atau membatasi interaksi ketika merasa energi saya terkuras atau kewalahan.", scenario: "Contoh: Setelah seharian penuh interaksi sosial, saya butuh waktu menyendiri untuk memulihkan energi.", type: 5 },
+            { text: "Saya merasa kompeten ketika saya memiliki pemahaman yang mendalam tentang sesuatu.", scenario: "Contoh: Saya merasa percaya diri untuk berbicara tentang topik yang benar-benar saya kuasai.", type: 5 },
+            { text: "Saya tidak suka merasa bergantung pada orang lain atau merasa tidak mampu.", scenario: "Contoh: Saya akan berusaha keras mempelajari sesuatu sendiri sebelum meminta bantuan orang lain.", type: 5 },
+            { text: "Saya sering membutuhkan waktu sendirian untuk mengisi ulang energi dan memproses pikiran saya.", scenario: "Contoh: Kamar saya adalah tempat perlindungan di mana saya bisa berpikir tanpa gangguan.", type: 5 },
+            { text: "Saya tidak suka tuntutan emosional yang berlebihan dari orang lain.", scenario: "Contoh: Saya merasa tidak nyaman jika seseorang terlalu banyak berbagi masalah emosionalnya kepada saya.", type: 5 },
+
+            // Tipe 6 (9 pertanyaan)
+            { text: "Saya sering memikirkan skenario terburuk atau potensi masalah untuk mempersiapkan diri.", scenario: "Contoh: Sebelum bepergian, saya akan memikirkan semua kemungkinan buruk yang bisa terjadi dan cara mengatasinya.", type: 6 },
+            { text: "Saya mencari kepastian, keamanan, dan dukungan dalam hidup saya dan hubungan saya.", scenario: "Contoh: Saya merasa lebih tenang jika memiliki pekerjaan yang stabil dan teman-teman yang bisa diandalkan.", type: 6 },
+            { text: "Saya bisa menjadi sangat setia dan berkomitmen kepada orang, kelompok, atau keyakinan yang saya percayai.", scenario: "Contoh: Saya akan membela teman saya mati-matian jika saya yakin dia benar.", type: 6 },
+            { text: "Saya cenderung mempertanyakan otoritas, niat orang lain, atau informasi baru sampai saya yakin itu aman.", scenario: "Contoh: Saya tidak akan langsung percaya pada berita atau janji manis sebelum saya menyelidikinya sendiri.", type: 6 },
+            { text: "Saya bisa merasa cemas atau ragu-ragu ketika menghadapi ketidakpastian atau keputusan penting.", scenario: "Contoh: Memilih jurusan kuliah atau pekerjaan baru bisa membuat saya sangat stres dan banyak pertimbangan.", type: 6 },
+            { text: "Saya sering mencari panduan atau jaminan dari orang atau sistem yang saya percayai.", scenario: "Contoh: Saya akan meminta pendapat orang yang saya hormati sebelum membuat keputusan besar.", type: 6 },
+            { text: "Saya bisa menjadi sangat waspada terhadap potensi bahaya atau pengkhianatan.", scenario: "Contoh: Saya berhati-hati dalam mempercayai orang baru dan memperhatikan tanda-tanda ketidakjujuran.", type: 6 },
+            { text: "Terkadang saya kesulitan mempercayai intuisi saya sendiri dan mencari validasi eksternal.", scenario: "Contoh: Meskipun saya punya firasat, saya akan mencari konfirmasi dari orang lain sebelum bertindak.", type: 6 },
+            { text: "Saya bisa menjadi pemberani dan protektif ketika orang yang saya sayangi terancam.", scenario: "Contoh: Saya tidak akan ragu menghadapi bahaya demi melindungi keluarga atau teman dekat.", type: 6 },
+
+            // Tipe 7 (9 pertanyaan)
+            { text: "Saya selalu mencari pengalaman baru, menyenangkan, dan merangsang untuk menghindari kebosanan.", scenario: "Contoh: Saya suka mencoba restoran baru, bepergian ke tempat eksotis, atau mempelajari hobi baru secara spontan.", type: 7 },
+            { text: "Saya optimis dan suka menjaga suasana tetap positif dan ringan.", scenario: "Contoh: Bahkan dalam situasi sulit, saya mencoba mencari sisi lucunya atau menghibur orang lain.", type: 7 },
+            { text: "Sulit bagi saya untuk fokus pada satu hal terlalu lama; saya suka banyak pilihan dan variasi.", scenario: "Contoh: Saya mungkin memiliki banyak tab browser terbuka atau beralih antar tugas dengan cepat.", type: 7 },
+            { text: "Saya cenderung menghindari perasaan, situasi, atau komitmen yang tidak menyenangkan atau membatasi.", scenario: "Contoh: Jika ada percakapan yang berat, saya mungkin akan mencoba mengalihkannya ke topik yang lebih ringan.", type: 7 },
+            { text: "Saya memiliki banyak ide, rencana, dan minat untuk masa depan; terkadang terlalu banyak.", scenario: "Contoh: Saya sering bersemangat tentang banyak proyek baru sekaligus, meskipun sulit untuk menyelesaikan semuanya.", type: 7 },
+            { text: "Saya bisa merasa gelisah atau tidak sabar jika terjebak dalam rutinitas atau hal yang monoton.", scenario: "Contoh: Pekerjaan yang sama setiap hari tanpa variasi bisa membuat saya cepat bosan.", type: 7 },
+            { text: "Saya tidak suka merasa dibatasi atau kehilangan kebebasan saya.", scenario: "Contoh: Saya lebih suka pekerjaan dengan jadwal fleksibel daripada yang terikat jam kantor yang ketat.", type: 7 },
+            { text: "Saya sering merencanakan petualangan atau kegiatan menarik di masa depan.", scenario: "Contoh: Saya sudah memikirkan liburan berikutnya bahkan sebelum liburan saat ini berakhir.", type: 7 },
+            { text: "Saya pandai merasionalisasi atau membingkai ulang hal-hal negatif menjadi positif.", scenario: "Contoh: Jika saya gagal dalam sesuatu, saya akan melihatnya sebagai pelajaran berharga atau kesempatan baru.", type: 7 },
+
+            // Tipe 8 (9 pertanyaan)
+            { text: "Saya tidak takut untuk menyuarakan pendapat saya dengan tegas, bahkan jika itu menimbulkan konflik.", scenario: "Contoh: Dalam rapat, saya akan langsung menyampaikan ketidaksetujuan saya jika ada hal yang menurut saya salah.", type: 8 },
+            { text: "Saya suka memegang kendali atas situasi, diri saya sendiri, dan lingkungan saya.", scenario: "Contoh: Saya lebih suka memimpin proyek daripada menjadi anggota tim biasa agar bisa mengarahkan jalannya.", type: 8 },
+            { text: "Saya akan melindungi orang-orang yang saya anggap lemah, tidak berdaya, atau diperlakukan tidak adil.", scenario: "Contoh: Jika saya melihat seseorang di-bully, saya akan maju untuk membelanya.", type: 8 },
+            { text: "Saya menghargai kekuatan, kemandirian, dan ketegasan, baik pada diri sendiri maupun orang lain.", scenario: "Contoh: Saya mengagumi orang yang berani mengambil risiko dan berdiri teguh pada pendiriannya.", type: 8 },
+            { text: "Saya tidak suka merasa dikendalikan, dimanipulasi, atau diremehkan oleh orang lain.", scenario: "Contoh: Saya akan sangat marah jika merasa ada yang mencoba mengatur hidup saya atau memanfaatkan saya.", type: 8 },
+            { text: "Saya cenderung mengambil inisiatif dan membuat keputusan dengan cepat.", scenario: "Contoh: Jika ada masalah, saya akan segera mencari solusi dan bertindak tanpa banyak ragu.", type: 8 },
+            { text: "Saya menghargai kejujuran yang blak-blakan, meskipun terkadang menyakitkan.", scenario: "Contoh: Saya lebih suka orang lain jujur kepada saya, meskipun itu kritik pedas, daripada berpura-pura.", type: 8 },
+            { text: "Saya sulit menunjukkan sisi rentan saya kepada orang lain.", scenario: "Contoh: Saya jarang menangis di depan orang lain atau mengakui bahwa saya sedang kesulitan.", type: 8 },
+            { text: "Saya percaya pada keadilan dan akan berjuang untuk itu.", scenario: "Contoh: Saya akan membela hak-hak orang yang tertindas, bahkan jika itu berisiko bagi saya.", type: 8 },
+
+            // Tipe 9 (9 pertanyaan)
+            { text: "Saya berusaha keras untuk menjaga keharmonisan, kedamaian batin, dan menghindari konflik.", scenario: "Contoh: Jika ada perdebatan sengit, saya akan mencoba menenangkan situasi atau menarik diri.", type: 9 },
+            { text: "Saya mudah beradaptasi, menerima, dan bisa melihat berbagai sudut pandang dalam suatu masalah.", scenario: "Contoh: Saya bisa memahami mengapa teman saya marah, meskipun saya tidak setuju dengan alasannya.", type: 9 },
+            { text: "Terkadang saya kesulitan mengetahui apa yang sebenarnya saya inginkan atau butuhkan, atau sulit menyatakannya.", scenario: "Contoh: Saat ditanya mau makan di mana, saya sering menjawab 'terserah' karena bingung atau tidak ingin merepotkan.", type: 9 },
+            { text: "Saya merasa paling nyaman ketika lingkungan sekitar saya damai, stabil, dan tanpa ketegangan.", scenario: "Contoh: Suasana rumah yang tenang dan harmonis sangat penting bagi saya.", type: 9 },
+            { text: "Saya cenderung menunda-nunda tugas yang tidak menyenangkan, sulit, atau berpotensi menimbulkan konflik.", scenario: "Contoh: Saya mungkin menunda menelepon seseorang jika saya tahu percakapannya akan sulit.", type: 9 },
+            { text: "Saya bisa 'menyatu' dengan keinginan atau agenda orang lain untuk menjaga kedamaian.", scenario: "Contoh: Saya akan ikut saja rencana teman-teman meskipun sebenarnya saya punya ide lain, demi menghindari perdebatan.", type: 9 },
+            { text: "Saya tidak suka ditekan atau dipaksa untuk membuat keputusan cepat.", scenario: "Contoh: Saya butuh waktu untuk memikirkan pilihan sebelum memutuskan, dan merasa tidak nyaman jika didesak.", type: 9 },
+            { text: "Saya mungkin mengabaikan masalah atau perasaan tidak nyaman saya sendiri demi menjaga keharmonisan.", scenario: "Contoh: Saya akan menahan rasa kesal saya daripada mengungkapkannya dan membuat suasana jadi tidak enak.", type: 9 },
+            { text: "Saya bisa menjadi keras kepala secara pasif jika saya merasa dipaksa melakukan sesuatu yang tidak saya inginkan.", scenario: "Contoh: Saya mungkin akan diam saja atau menunda-nunda pekerjaan jika saya tidak setuju dengan perintah atasan.", type: 9 }
+        ];
+
+        let answeredQuestions = 0;
+        const totalQuestions = questions.length;
+        const progressBar = document.getElementById('progressBar');
+
+        function updateProgressBar() {
+            answeredQuestions = 0;
+            questions.forEach((q, index) => {
+                if (document.querySelector(`input[name="q${index + 1}"]:checked`)) {
+                    answeredQuestions++;
+                }
+            });
+            const percentage = (answeredQuestions / totalQuestions) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+
+
+        // Shuffle questions
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        shuffleArray(questions);
+
+        // Generate question list
+        const questionListContainer = document.querySelector('.question-list');
+        const questionAssignments = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [] };
+        questions.forEach((q, index) => {
+            const questionItem = document.createElement('div');
+            questionItem.classList.add('question-item');
+            const statementTextP = document.createElement('p');
+            statementTextP.classList.add('statement-text');
+            statementTextP.textContent = `${index + 1}. ${q.text}`;
+            questionItem.appendChild(statementTextP);
+            if (q.scenario) {
+                const scenarioTextP = document.createElement('p');
+                scenarioTextP.classList.add('scenario-text');
+                scenarioTextP.innerHTML = `<em>${q.scenario}</em>`;
+                questionItem.appendChild(scenarioTextP);
+            }
+            const optionsDiv = document.createElement('div');
+            optionsDiv.classList.add('options');
+            const scale = [
+                { label: 'SS', value: 5 }, { label: 'S', value: 4 }, { label: 'N', value: 3 },
+                { label: 'TS', value: 2 }, { label: 'STS', value: 1 }
+            ];
+            scale.forEach(opt => {
+                const labelEl = document.createElement('label');
+                const radio = document.createElement('input');
+                radio.type = 'radio'; radio.name = `q${index + 1}`; radio.value = opt.value; radio.required = true;
+                
+                // Add event listener to update progress bar and style
+                radio.addEventListener('change', (event) => {
+                    updateProgressBar();
+                    // Remove 'selected' class from all labels in this question group
+                    document.querySelectorAll(`input[name="q${index + 1}"]`).forEach(rb => {
+                        rb.parentElement.classList.remove('selected');
+                    });
+                    // Add 'selected' class to the parent label of the checked radio
+                    if(event.target.checked) {
+                        event.target.parentElement.classList.add('selected');
+                    }
+                });
+
+                const span = document.createElement('span');
+                span.textContent = opt.label;
+
+                labelEl.appendChild(radio); 
+                labelEl.appendChild(span);
+                optionsDiv.appendChild(labelEl);
+            });
+            questionItem.appendChild(optionsDiv);
+            questionListContainer.appendChild(questionItem);
+            questionAssignments[q.type].push(index + 1);
+        });
+
+        function calculateScores() {
+            const form = document.getElementById('enneagramTest');
+            if (!form.checkValidity()) {
+                alert("Mohon jawab semua pernyataan sebelum melihat hasil. Ada " + questions.length + " pernyataan.");
+                return;
+            }
+
+            const scores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+            questions.forEach((q, index) => {
+                const selectedValue = document.querySelector(`input[name="q${index + 1}"]:checked`);
+                if (selectedValue) {
+                    scores[q.type] += parseInt(selectedValue.value);
+                }
+            });
+
+            const scoringTableBody = document.querySelector('#scoringTable tbody');
+            scoringTableBody.innerHTML = '';
+            const scoreSummaryDiv = document.getElementById('scoreSummary');
+            scoreSummaryDiv.innerHTML = '<h3>Ringkasan Skor per Tipe:</h3>'; 
+
+            let sortedScoresForTable = [];
+             for (let type = 1; type <= 9; type++) {
+                sortedScoresForTable.push({ type: type, score: scores[type] });
+            }
+            sortedScoresForTable.sort((a, b) => b.score - a.score); 
+
+            sortedScoresForTable.forEach(item => {
+                const p = document.createElement('p');
+                p.innerHTML = `<strong>Tipe ${item.type}:</strong> ${item.score} poin`; // Made type bold
+                scoreSummaryDiv.appendChild(p);
+            });
+
+            for (let type = 1; type <= 9; type++) {
+                const row = scoringTableBody.insertRow();
+                const cellType = row.insertCell();
+                const cellNumbers = row.insertCell();
+                const cellScore = row.insertCell();
+                cellType.textContent = `Tipe ${type}`;
+                questionAssignments[type].sort((a,b) => a-b); 
+                const displayedNumbers = questionAssignments[type].length > 7
+                    ? questionAssignments[type].slice(0, 7).join(', ') + '...'
+                    : questionAssignments[type].join(', ');
+                cellNumbers.textContent = displayedNumbers;
+                cellScore.textContent = scores[type];
+            }
+
+            const topResultsContainer = document.getElementById('topResultsContainer');
+            topResultsContainer.innerHTML = '';
+
+            let allRankedTypes = [];
+            for (let typeKey in scores) { // Iterate over keys of scores object
+                allRankedTypes.push({ type: parseInt(typeKey), score: scores[typeKey] });
+            }
+            allRankedTypes.sort((a, b) => b.score - a.score); 
+
+            const topThree = allRankedTypes.slice(0, 3);
+
+            if (topThree.length === 0 || topThree[0].score === 0) {
+                 const p = document.createElement('p');
+                 p.textContent = "Tidak ada skor yang cukup signifikan untuk menentukan tipe. Pastikan semua pertanyaan dijawab.";
+                 topResultsContainer.appendChild(p);
+            } else {
+                topThree.forEach((rankedType, index) => {
+                    const dominantType = rankedType.type;
+                    const dominantScore = rankedType.score;
+
+                    let wing1, wing2;
+                    if (dominantType === 1) { wing1 = 9; wing2 = 2; }
+                    else if (dominantType === 9) { wing1 = 8; wing2 = 1; }
+                    else { wing1 = dominantType - 1; wing2 = dominantType + 1; }
+
+                    const scoreWing1 = scores[wing1];
+                    const scoreWing2 = scores[wing2];
+                    
+                    let finalDesignation = `Tipe ${dominantType}`;
+                    let explanation = `Skor Tipe Utama: ${dominantScore}. Skor Sayap (Tipe ${wing1}): ${scoreWing1}, Skor Sayap (Tipe ${wing2}): ${scoreWing2}. `;
+
+                    const wingThresholdDifference = 3;
+                    const minimumWingScore = Math.max(8, dominantScore * 0.25); 
+
+                    const isWing1Significant = scoreWing1 >= minimumWingScore;
+                    const isWing2Significant = scoreWing2 >= minimumWingScore;
+                    const scoreDifference = Math.abs(scoreWing1 - scoreWing2);
+
+                    if (isWing1Significant && isWing2Significant) {
+                        if (scoreDifference < wingThresholdDifference) {
+                            finalDesignation += ` (Sayap Seimbang ${wing1} & ${wing2})`;
+                            explanation += `Kedua sayap signifikan dan berdekatan.`;
+                        } else if (scoreWing1 > scoreWing2) {
+                            finalDesignation = `Tipe ${dominantType}w${wing1}`;
+                            explanation += `Sayap ${wing1} lebih dominan.`;
+                        } else {
+                            finalDesignation = `Tipe ${dominantType}w${wing2}`;
+                            explanation += `Sayap ${wing2} lebih dominan.`;
+                        }
+                    } else if (isWing1Significant) {
+                        finalDesignation = `Tipe ${dominantType}w${wing1}`;
+                        explanation += `Hanya sayap ${wing1} yang signifikan.`;
+                    } else if (isWing2Significant) {
+                        finalDesignation = `Tipe ${dominantType}w${wing2}`;
+                        explanation += `Hanya sayap ${wing2} yang signifikan.`;
+                    } else {
+                        finalDesignation += ` (Tanpa Sayap Dominan Jelas)`;
+                        explanation += `Skor kedua sayap tidak cukup signifikan.`;
+                    }
+                    
+                    const resultItemDiv = document.createElement('div');
+                    resultItemDiv.classList.add('top-result-item');
+
+                    const rankP = document.createElement('p');
+                    rankP.classList.add('rank');
+                    rankP.textContent = `Peringkat ${index + 1}:`;
+                    resultItemDiv.appendChild(rankP);
+
+                    const designationP = document.createElement('p');
+                    designationP.classList.add('designation');
+                    designationP.textContent = finalDesignation;
+                    resultItemDiv.appendChild(designationP);
+
+                    const explanationP = document.createElement('p');
+                    explanationP.classList.add('explanation');
+                    explanationP.textContent = explanation;
+                    resultItemDiv.appendChild(explanationP);
+
+                    topResultsContainer.appendChild(resultItemDiv);
+                });
+            }
+
+            document.getElementById('scoringGuide').classList.remove('hidden');
+            document.getElementById('resultsDisplay').classList.remove('hidden');
+            document.getElementById('typeDescriptions').classList.remove('hidden');
+            document.getElementById('resultsDisplay').scrollIntoView({ behavior: 'smooth' });
+        }
+        // Initial call to set progress bar if some questions are pre-answered (e.g. from localStorage in future)
+        updateProgressBar();
+    </script>
+</body>
+</html>
